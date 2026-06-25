@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación Psicosocial — Interurbana</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; font-size: 15px; line-height: 1.6; }
+.container { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
+.header { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 24px; margin-bottom: 20px; }
+.logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.logo-dot { width: 32px; height: 32px; border-radius: 8px; background: #1a73e8; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 600; }
+.empresa { font-size: 13px; color: #5f6368; }
+h1 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+.intro { font-size: 13px; color: #5f6368; line-height: 1.6; }
+.anon-banner { background: #e8f0fe; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #1a73e8; margin-top: 12px; }
+.legal-box { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #5f6368; margin-top: 10px; line-height: 1.5; }
+.section-label { font-size: 11px; font-weight: 600; color: #5f6368; text-transform: uppercase; letter-spacing: 0.06em; margin: 24px 0 10px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
+.section-intro { font-size: 13px; color: #3c4043; background: #f8f9fa; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-weight: 500; }
+.question { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 16px 20px; margin-bottom: 10px; transition: border-color 0.2s; }
+.question.error { border-color: #d93025; }
+.q-meta { font-size: 11px; color: #9aa0a6; margin-bottom: 4px; }
+.q-text { font-size: 14px; color: #1a1a1a; margin-bottom: 14px; line-height: 1.5; }
+.options { display: flex; flex-wrap: wrap; gap: 6px; }
+.opt-label { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid #dadce0; border-radius: 20px; cursor: pointer; font-size: 13px; color: #3c4043; background: #fff; transition: all 0.15s; user-select: none; }
+.opt-label:hover { border-color: #1a73e8; color: #1a73e8; background: #f0f4ff; }
+.opt-label.selected { border-color: #1a73e8; color: #1a73e8; background: #e8f0fe; font-weight: 500; }
+.opt-label input { display: none; }
+.btn-primary { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; background: #1a73e8; color: #fff; border: none; border-radius: 10px; cursor: pointer; margin-top: 24px; }
+.btn-primary:hover { background: #1557b0; }
+.btn-secondary { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; background: #fff; color: #1a73e8; border: 1px solid #dadce0; border-radius: 10px; cursor: pointer; margin-top: 10px; }
+.error-msg { font-size: 12px; color: #d93025; margin-top: 16px; text-align: center; display: none; }
+.results { display: none; }
+.results-header { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 24px; margin-bottom: 16px; }
+.results-header h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.results-header p { font-size: 13px; color: #5f6368; }
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 0; }
+.summary-card { border-radius: 10px; padding: 14px; text-align: center; }
+.summary-card.fav { background: #e6f4ea; }
+.summary-card.int { background: #fef7e0; }
+.summary-card.desf { background: #fce8e6; }
+.summary-num { font-size: 28px; font-weight: 700; }
+.summary-card.fav .summary-num { color: #137333; }
+.summary-card.int .summary-num { color: #9e5a00; }
+.summary-card.desf .summary-num { color: #c5221f; }
+.summary-lbl { font-size: 12px; font-weight: 500; }
+.summary-card.fav .summary-lbl { color: #137333; }
+.summary-card.int .summary-lbl { color: #9e5a00; }
+.summary-card.desf .summary-lbl { color: #c5221f; }
+.dim-card { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 16px 20px; margin-bottom: 8px; }
+.dim-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+.dim-name { font-size: 14px; font-weight: 500; color: #1a1a1a; flex: 1; }
+.pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.pill.fav { background: #e6f4ea; color: #137333; }
+.pill.int { background: #fef7e0; color: #9e5a00; }
+.pill.desf { background: #fce8e6; color: #c5221f; }
+.bar-track { height: 6px; background: #f1f3f4; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+.bar-fill { height: 100%; border-radius: 3px; }
+.bar-fill.fav { background: #34a853; }
+.bar-fill.int { background: #fbbc04; }
+.bar-fill.desf { background: #ea4335; }
+.dim-score { font-size: 12px; color: #9aa0a6; }
+.alert-box { background: #fce8e6; border: 1px solid #f5c6c3; border-radius: 10px; padding: 14px 16px; margin-top: 16px; font-size: 13px; color: #c5221f; line-height: 1.6; }
+.alert-box strong { display: block; margin-bottom: 4px; }
+.footer-note { font-size: 12px; color: #9aa0a6; text-align: center; margin-top: 20px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div id="form-section">
+  <div class="header">
+    <div class="logo-row">
+      <div class="logo-dot">CI</div>
+      <span class="empresa">Constructora Interurbana S.A.</span>
+    </div>
+    <h1>Evaluación de riesgos psicosociales</h1>
+    <p class="intro">La respuesta del cuestionario que tienes en tus manos servirá para realizar la evaluación de riesgos psicosociales. Su objetivo es identificar y medir todas aquellas condiciones de trabajo relacionadas con la organización del trabajo que pueden representar un riesgo para la salud. Los resultados, tratados de forma colectiva, se usarán para conocer los riesgos psicosociales en la empresa y posteriormente implementar medidas preventivas, es decir, cambios en las condiciones de trabajo para eliminarlos o reducirlos. Por eso es necesario que contestes <strong>TODAS</strong> las preguntas.</p>
+    <div class="anon-banner">&#128274; Cuestionario <strong>ANÓNIMO</strong>, de respuesta <strong>VOLUNTARIA</strong> e <strong>INDIVIDUAL</strong>. Toda la información se utilizará exclusivamente para los objetivos descritos.</div>
+    <div class="legal-box">Esta introducción del cuestionario supone una garantía legal que el personal técnico que trabajará en esta evaluación de riesgos asume y cumple los preceptos legales y éticos de protección de la intimidad y de los datos e informaciones personales. Los cuestionarios se destruirán una vez se planifiquen las medidas preventivas.<br><br><strong>MUCHAS GRACIAS POR TU COLABORACIÓN</strong></div>
+  </div>
+  <div id="questions-area"></div>
+  <button class="btn-primary" onclick="calcular()">Ver mis resultados</button>
+  <p class="error-msg" id="error-msg">&#9888; Por favor responde todas las preguntas antes de continuar.</p>
+</div>
+
+<div class="results" id="results-section">
+  <div class="results-header">
+    <h2>Analiza tus resultados</h2>
+    <p>Recuerda que la evaluación de riesgos tiene por objetivo identificar y medir aquellas condiciones de trabajo relacionadas con la organización del trabajo que pueden representar un riesgo para la salud. Los resultados obtenidos de forma colectiva son los que servirán para conocer los riesgos psicosociales en la empresa.</p>
+    <div class="summary-grid">
+      <div class="summary-card fav"><div class="summary-num" id="n-fav">0</div><div class="summary-lbl">Verde (favorable)</div></div>
+      <div class="summary-card int"><div class="summary-num" id="n-int">0</div><div class="summary-lbl">Amarillo (intermedio)</div></div>
+      <div class="summary-card desf"><div class="summary-num" id="n-desf">0</div><div class="summary-lbl">Rojo (desfavorable)</div></div>
+    </div>
+  </div>
+  <div class="section-label">Resultado por dimensión</div>
+  <div id="dims-area"></div>
+  <div id="alert-area"></div>
+  <p class="footer-note">Una vez vistos tus resultados puedes cerrar esta ventana.<br>Gracias por tu colaboración.</p>
+  <button class="btn-secondary" onclick="reiniciar()">Volver al cuestionario</button>
+</div>
+
+</div>
+<script>
+var SHEET_URL = 'https://script.google.com/macros/s/AKfycbztS8OcCd9qxrZLJ4Kc8VHdfu2H0rvNNbfWDjWH-P11FlIJ2ur1CF3Fdk_9Sh7mxut-EA/exec';
+
+// Preguntas exactas del Anexo I oficial CoPsoQ PSQCAT v2
+// vals: [Siempre, MuchasVeces, AVeces, SoloAlgunaVez, Nunca] para bloque frecuencia
+// vals: [EnGranMedida, EnBuenaMedida, EnCiertaMedida, EnAlgunaMedida, EnNingunCaso] para bloque medida
+var preguntas = [
+  // BLOQUE 1: frecuencia (p1-p8)
+  { num:1,  texto:"¿La distribución de tareas es irregular y provoca que se te acumule el trabajo?",          vals:[4,3,2,1,0] },
+  { num:2,  texto:"¿Tienes tiempo suficiente para hacer tu trabajo?",                                          vals:[0,1,2,3,4] },
+  { num:3,  texto:"¿Hay momentos en los que necesitarías estar en la empresa y en casa a la vez?",            vals:[4,3,2,1,0] },
+  { num:4,  texto:"¿Sientes que tu trabajo te ocupa tanto tiempo que perjudica a tus tareas doméstico-familiares?", vals:[4,3,2,1,0] },
+  { num:5,  texto:"¿En el trabajo tienes que ocuparte de los problemas personales de otras personas?",        vals:[4,3,2,1,0] },
+  { num:6,  texto:"¿Tienes que trabajar muy rápido?",                                                         vals:[4,3,2,1,0] },
+  { num:7,  texto:"¿Tienes mucha influencia sobre las decisiones que afectan a tu trabajo?",                  vals:[4,3,2,1,0] },
+  { num:8,  texto:"¿Tienes influencia sobre CÓMO realizas tu trabajo?",                                       vals:[4,3,2,1,0] },
+  // BLOQUE 2: medida (p9-p14)
+  { num:9,  texto:"¿Tu trabajo, en general, es desgastador emocionalmente?",                                  vals:[4,3,2,1,0] },
+  { num:10, texto:"¿El ritmo de trabajo es alto durante toda la jornada?",                                    vals:[4,3,2,1,0] },
+  { num:11, texto:"¿Tu trabajo permite que aprendas cosas nuevas?",                                           vals:[4,3,2,1,0] },
+  { num:12, texto:"¿Tu trabajo permite que apliques tus habilidades y conocimientos?",                        vals:[4,3,2,1,0] },
+  { num:13, texto:"¿Tus tareas tienen sentido?",                                                              vals:[4,3,2,1,0] },
+  { num:14, texto:"¿Las tareas que haces te parecen importantes?",                                            vals:[4,3,2,1,0] },
+  // BLOQUE 3: medida (p15-p20)
+  { num:15, texto:"¿Tu trabajo tiene objetivos claros?",                                                      vals:[4,3,2,1,0] },
+  { num:16, texto:"¿Sabes exactamente qué se espera de ti en el trabajo?",                                    vals:[4,3,2,1,0] },
+  { num:17, texto:"¿Se te exigen cosas contradictorias en el trabajo?",                                       vals:[4,3,2,1,0] },
+  { num:18, texto:"¿Tienes que hacer tareas que tú crees que deberían hacerse de otra manera?",               vals:[4,3,2,1,0] },
+  { num:19, texto:"¿En tu empresa se te informa con suficiente antelación de decisiones importantes, cambios y proyectos de futuro?", vals:[4,3,2,1,0] },
+  { num:20, texto:"¿Recibes toda la información que necesitas para realizar bien tu trabajo?",                 vals:[4,3,2,1,0] },
+  // BLOQUE 4: medida (p21-p24)
+  { num:21, texto:"En estos momentos, estás preocupado o preocupada por… si te cambian el horario (turno, días de la semana, horas de entrada y salida) contra tu voluntad?", vals:[4,3,2,1,0] },
+  { num:22, texto:"En estos momentos, estás preocupado o preocupada por… si te varían el salario (que no te lo actualicen, que te lo bajen, que introduzcan el salario variable, que te paguen en especies, etc.)?", vals:[4,3,2,1,0] },
+  { num:23, texto:"En estos momentos, estás preocupado o preocupada por… si te despiden o no te renuevan el contrato?", vals:[4,3,2,1,0] },
+  { num:24, texto:"En estos momentos, estás preocupado o preocupada por… lo difícil que sería encontrar otro trabajo en el caso de que te quedaras en paro?", vals:[4,3,2,1,0] },
+  // BLOQUE 5: medida (p25-p30)
+  { num:25, texto:"¿Confía la Dirección en que los trabajadores hagan un buen trabajo?",                      vals:[4,3,2,1,0] },
+  { num:26, texto:"¿Te puedes fiar de la información procedente de la Dirección?",                            vals:[4,3,2,1,0] },
+  { num:27, texto:"¿Se solucionan los conflictos de una manera justa?",                                       vals:[4,3,2,1,0] },
+  { num:28, texto:"¿Se distribuyen las tareas de una forma justa?",                                           vals:[4,3,2,1,0] },
+  { num:29, texto:"¿Se puede afirmar que tu jefe inmediato planifica bien el trabajo?",                       vals:[4,3,2,1,0] },
+  { num:30, texto:"¿Se puede afirmar que tu jefe inmediato resuelve bien los conflictos?",                    vals:[4,3,2,1,0] }
+];
+
+var optsFrec = ["Siempre","Muchas veces","A veces","Solo alguna vez","Nunca"];
+var optsMed  = ["En gran medida","En buena medida","En cierta medida","En alguna medida","En ningún caso"];
+
+// Dimensiones y baremos exactos de la tabla pág.7 Anexo I
+// pregs: índices 0-based (p1=índice 0, p2=índice 1, etc.)
+var dims = [
+  { name:"Exigencias cuantitativas",             pregs:[0,1],   fav:[0,1],  int:[2,3],  desf:[4,8]  },
+  { name:"Doble presencia",                      pregs:[2,3],   fav:[0,3],  int:[4,5],  desf:[6,8]  },
+  { name:"Exigencias emocionales",               pregs:[4,8],   fav:[0,3],  int:[4,5],  desf:[6,8]  },
+  { name:"Ritmo de trabajo",                     pregs:[5,9],   fav:[0,1],  int:[2,3],  desf:[4,8]  },
+  { name:"Influencia",                           pregs:[6,7],   fav:[6,8],  int:[4,5],  desf:[0,3]  },
+  { name:"Posibilidades de desarrollo",          pregs:[10,11], fav:[6,8],  int:[4,5],  desf:[0,3]  },
+  { name:"Sentido del trabajo",                  pregs:[12,13], fav:[7,8],  int:[6,6],  desf:[0,5]  },
+  { name:"Claridad de rol",                      pregs:[14,15], fav:[8,8],  int:[6,7],  desf:[0,5]  },
+  { name:"Conflicto de rol",                     pregs:[16,17], fav:[0,1],  int:[2,3],  desf:[4,8]  },
+  { name:"Previsibilidad",                       pregs:[18,19], fav:[7,8],  int:[5,6],  desf:[0,4]  },
+  { name:"Inseguridad sobre condiciones de trabajo", pregs:[20,21], fav:[0,1], int:[2,3], desf:[4,8] },
+  { name:"Inseguridad sobre el empleo",          pregs:[22,23], fav:[0,2],  int:[3,4],  desf:[5,8]  },
+  { name:"Confianza vertical",                   pregs:[24,25], fav:[7,8],  int:[5,6],  desf:[0,4]  },
+  { name:"Justicia",                             pregs:[26,27], fav:[7,8],  int:[5,6],  desf:[0,4]  },
+  { name:"Calidad del liderazgo",                pregs:[28,29], fav:[7,8],  int:[5,6],  desf:[0,4]  }
+];
+
+var secciones = [
+  {
+    titulo: "Las siguientes preguntas tratan sobre las exigencias y contenidos de tu trabajo",
+    intro: "Escoge 1 SOLA RESPUESTA para cada una de las siguientes preguntas. ¿Con qué frecuencia…?",
+    opts: optsFrec, from: 0, to: 7
+  },
+  {
+    titulo: "Siguiendo con los contenidos de tu trabajo",
+    intro: "Escoge 1 sola RESPUESTA para cada una de las siguientes preguntas. ¿En qué medida…?",
+    opts: optsMed, from: 8, to: 13
+  },
+  {
+    titulo: "Estas preguntas hacen referencia al grado de definición de tus tareas",
+    intro: "Escoge 1 SOLA RESPUESTA para cada una de las siguientes preguntas. ¿En qué medida…?",
+    opts: optsMed, from: 14, to: 19
+  },
+  {
+    titulo: "Estas preguntas hacen referencia a las preocupaciones sobre posibles cambios en tus condiciones de trabajo",
+    intro: "Escoge 1 SOLA RESPUESTA para cada una de las siguientes preguntas. ¿En qué medida…?",
+    opts: optsMed, from: 20, to: 23
+  },
+  {
+    titulo: "Las siguientes preguntas hacen referencia al reconocimiento, la confianza y la justicia en tu lugar de trabajo",
+    intro: "Escoge 1 SOLA RESPUESTA para cada una de las siguientes preguntas. ¿En qué medida…?",
+    opts: optsMed, from: 24, to: 29
+  }
+];
+
+var answers = new Array(30).fill(null);
+
+function buildForm() {
+  var html = '';
+  secciones.forEach(function(sec) {
+    html += '<div class="section-label">' + sec.titulo + '</div>';
+    html += '<div class="section-intro">' + sec.intro + '</div>';
+    for (var i = sec.from; i <= sec.to; i++) {
+      var p = preguntas[i];
+      html += '<div class="question" id="q' + i + '">';
+      html += '<div class="q-meta">Pregunta ' + p.num + ' de 30</div>';
+      html += '<div class="q-text">' + p.num + '. ' + p.texto + '</div>';
+      html += '<div class="options">';
+      sec.opts.forEach(function(o, oi) {
+        html += '<label class="opt-label" id="opt' + i + '_' + oi + '" onclick="sel(' + i + ',' + oi + ')">';
+        html += '<input type="radio" name="q' + i + '" value="' + oi + '">' + o + '</label>';
+      });
+      html += '</div></div>';
+    }
+  });
+  document.getElementById('questions-area').innerHTML = html;
+}
+
+function sel(qi, oi) {
+  answers[qi] = oi;
+  for (var k = 0; k < 5; k++) {
+    var el = document.getElementById('opt' + qi + '_' + k);
+    if (el) el.className = 'opt-label' + (k === oi ? ' selected' : '');
+  }
+  document.getElementById('q' + qi).classList.remove('error');
+}
+
+function classify(dim, score) {
+  if (score >= dim.fav[0] && score <= dim.fav[1]) return 'fav';
+  if (score >= dim.int[0] && score <= dim.int[1]) return 'int';
+  return 'desf';
+}
+
+function enviarDatos(data) {
+  fetch(SHEET_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(function(e) { console.log('Error envio:', e); });
+}
+
+function calcular() {
+  var missing = [];
+  for (var i = 0; i < 30; i++) { if (answers[i] === null) missing.push(i); }
+  if (missing.length > 0) {
+    missing.forEach(function(i) { document.getElementById('q' + i).classList.add('error'); });
+    document.getElementById('error-msg').style.display = 'block';
+    document.getElementById('q' + missing[0]).scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  document.getElementById('error-msg').style.display = 'none';
+
+  // Calcular puntuaciones por dimensión usando valores oficiales
+  var scores = dims.map(function(d) {
+    return d.pregs.reduce(function(sum, qi) {
+      return sum + preguntas[qi].vals[answers[qi]];
+    }, 0);
+  });
+
+  // Enviar a Google Sheets
+  var data = { timestamp: new Date().toLocaleString('es-ES') };
+  dims.forEach(function(d, i) { data[d.name] = scores[i]; });
+  enviarDatos(data);
+
+  // Mostrar resultados
+  var nFav=0, nInt=0, nDesf=0;
+  var labels = { fav:'Favorable (verde)', int:'Intermedio (amarillo)', desf:'Desfavorable (rojo)' };
+  var dimsHtml = '';
+
+  dims.forEach(function(d, i) {
+    var s = scores[i];
+    var cl = classify(d, s);
+    if (cl==='fav') nFav++; else if (cl==='int') nInt++; else nDesf++;
+    var pct = Math.round((s / 8) * 100);
+    dimsHtml += '<div class="dim-card">';
+    dimsHtml += '<div class="dim-top"><div class="dim-name">' + d.name + '</div>';
+    dimsHtml += '<span class="pill ' + cl + '">' + labels[cl] + '</span></div>';
+    dimsHtml += '<div class="bar-track"><div class="bar-fill ' + cl + '" style="width:' + pct + '%"></div></div>';
+    dimsHtml += '<div class="dim-score">Tu puntuación: ' + s + ' puntos</div></div>';
+  });
+
+  document.getElementById('n-fav').textContent = nFav;
+  document.getElementById('n-int').textContent = nInt;
+  document.getElementById('n-desf').textContent = nDesf;
+  document.getElementById('dims-area').innerHTML = dimsHtml;
+
+  var alertHtml = nDesf > 0
+    ? '<div class="alert-box"><strong>Tienes dimensiones en situación desfavorable (rojo)</strong>Esto indica condiciones de trabajo que pueden suponer un riesgo para tu salud. El técnico de prevención trabajará con los datos colectivos de toda la plantilla para proponer medidas preventivas.</div>'
+    : '';
+  document.getElementById('alert-area').innerHTML = alertHtml;
+
+  document.getElementById('form-section').style.display = 'none';
+  document.getElementById('results-section').style.display = 'block';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function reiniciar() {
+  answers = new Array(30).fill(null);
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('form-section').style.display = 'block';
+  buildForm();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+buildForm();
+</script>
+</body>
+</html>
